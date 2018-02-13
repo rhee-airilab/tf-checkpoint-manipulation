@@ -8,7 +8,7 @@ import re
 import tensorflow as tf
 
 def cpmodify(cp_or_dir,from_regex,to_str,output_path,verbose=False):
-    vars = tf.train.list_variables(cp_or_dir) # return list of (name, shape) tuples
+    vars = tf.contrib.framework.list_variables(cp_or_dir) # return list of (name, shape) tuples
     session_config = tf.ConfigProto(
         allow_soft_placement=True,
         gpu_options={
@@ -18,7 +18,7 @@ def cpmodify(cp_or_dir,from_regex,to_str,output_path,verbose=False):
     with tf.Graph().as_default(), tf.Session(config=session_config).as_default() as sess:
         new_vars = []
         for name, shape in vars:
-            v = tf.train.load_variable(cp_or_dir, name)
+            v = tf.contrib.framework.load_variable(cp_or_dir, name)
             new_name = re.sub(from_regex, to_str, name)
             new_var = tf.Variable(v, name=new_name)
             sess.run(new_var.initializer)
